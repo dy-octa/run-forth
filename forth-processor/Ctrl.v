@@ -28,6 +28,7 @@ module Ctrl(
 	output reg MemWrite,
 	output reg Jump,
 	output reg JumpZ,
+	output reg JumpReg,
 	output reg [3:0] AluOp,
 	output reg signed [1:0] Offset,
 	output reg signed [1:0] AOffset,
@@ -36,27 +37,27 @@ module Ctrl(
 	output reg Swap
     );
 	always @(*) begin
-		B_op = 0; TWrite = 0; NWrite = 0; MemRead = 0;
-		MemWrite = 0; Jump = 0; AluOp = 0; Offset = 0; AOffset = 0;
-		imm = 0; SelectImm = 0; Swap = 0;
+		B_op = 0; TWrite = 0; NWrite = 0; RWrite = 0; MemRead = 0;
+		MemWrite = 0; Jump = 0; JumpZ = 0; AluOp = 0; Offset = 0; AOffset = 0;
+		imm = 0; SelectImm = 0; Swap = 0; JumpReg = 0;
 		if (instr[15] == 1) begin // imm
 			imm = instr[14:0];
 			SelectImm = 1;
 			TWrite = 1; AluOp = 10; Offset = 1;
 		end else if (instr[15:9] == 0) begin // jr
 			B_op = 2; // R
-			Jump = 1; AOffset = -1;
+			JumpReg = 1; AOffset = -1;
 			AluOp = 10; // movb
 		end else if (instr[15:13] == 'b001) begin // j
-			imm = instr[12:0]; SelectImm = 1;
-			Jump = 1; AluOp = 10;
+			imm = instr[12:0];
+			Jump = 1;
 		end else if (instr[15:13] == 'b010) begin // jal
+			imm = instr[12:0]; Jump = 1;
 			B_op = 0; // PC
-			Jump = 1; AOffset = 1;
-			AluOp = 10; RWrite = 1;
+			AOffset = 1; AluOp = 10; RWrite = 1;
 		end else if (instr[15:13] == 'b011) begin // jz
-			imm = instr[12:0]; SelectImm = 1;
-			JumpZ = 1; AluOp = 10;
+			imm = instr[12:0]; JumpZ = 1;
+			AluOp = 10; Swap = 1; // Result: T
 		end else begin // ALU instructions
 			if (instr[8:7] == 3)
 				MemRead = 1;

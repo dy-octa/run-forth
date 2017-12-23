@@ -21,8 +21,8 @@
 module pc(
     input Clk,
     input Rst,
-	 input [31:0] nPC,
-    output reg [31:0] PC
+	 input [15:0] nPC,
+    output reg [15:0] PC
     );
 	initial PC <= 0; 
 	always @(posedge Clk) begin

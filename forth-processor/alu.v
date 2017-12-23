@@ -38,9 +38,9 @@ module alu(
 			10: Res = B;
 			11: Res = A << B;
 			12: Res = A >> B;
-			13: Res = A < B;
-			14: Res = A >= B;
-			15: Res = A == B;
+			13: Res = (A < B ? {16{1'b1}} : 0);
+			14: Res = (A >= B ? {16{1'b1}} : 0);
+			15: Res = (A == B ? {16{1'b1}} : 0);
 			default: Res = {16{1'bx}};
 		endcase
 	end

@@ -24,7 +24,7 @@ module stack(
     input TWrite,
     input NWrite,
     input [15:0] WData,
-    input signed [7:0] Offset,
+    input signed [1:0] Offset,
     output [15:0] T,
     output [15:0] N
     );
@@ -46,12 +46,14 @@ module stack(
 			top = 0;
 		end else begin
 			if (TWrite) begin
-				$display("T <= %h\n", WData);
-				_stack[top + Offset] <= WData;
+				$display("%m: T <= %h\n", WData);
+				if (top + Offset >= 0 && top + Offset < 256)
+					_stack[top + Offset] <= WData;
 			end
 			if (NWrite) begin	
-				$display("N <= %h\n", WData);
-				_stack[top + Offset - 1] <= WData;
+				$display("%m: N <= %h\n", WData); 
+				if (top + Offset - 1 >= 0 && top + Offset < 256)
+					_stack[top + Offset - 1] <= WData;
 			end
 			top <= top + Offset;
 		end

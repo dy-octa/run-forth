@@ -23,7 +23,7 @@ module processor(
     input Rst
     );
 	 
-	wire [15:0] nPC;
+	wire [15:0] nPC, PC, instr;
 	pc pc(
     .Clk(Clk),
 	 .Rst(Rst),
@@ -34,6 +34,9 @@ module processor(
 		.PC(PC),
 		.instr(instr)
 	);
+	wire [1:0] B_op, Offset, AOffset;
+	wire [3:0] AluOp;
+	wire [15:0] imm;
 	Ctrl Ctrl(
 		.instr(instr),
 		.B_op(B_op),
@@ -44,6 +47,7 @@ module processor(
 		.MemWrite(MemWrite),
 		.Jump(Jump),
 		.JumpZ(JumpZ),
+		.JumpReg(JumpReg),
 		.AluOp(AluOp),
 		.Offset(Offset),
 		.AOffset(AOffset),
@@ -52,10 +56,11 @@ module processor(
 		.Swap(Swap)
     );
 	 
+	 wire [15:0] T, N, R, Mem, Result;
 	 stack stack(
 		.Clk(Clk),
 		.Rst(Rst),
-		.TWrite(Twrite),
+		.TWrite(TWrite),
 		.NWrite(NWrite),
 		.WData(Result),
 		.Offset(Offset),
@@ -65,8 +70,8 @@ module processor(
 	 stack address(
 		.Clk(Clk),
 		.Rst(Rst),
-		.TWrite(Rwrite),
-		.NWrite(0),
+		.TWrite(RWrite),
+		.NWrite('b0),
 		.WData(Result),
 		.Offset(AOffset),
 		.T(R)
@@ -80,7 +85,8 @@ module processor(
 		.MemRead(MemRead),
 		.MemWrite(MemWrite)
 	);
-	 
+	
+	wire [15:0] A, B;
 	alu_in alu_in(
 		.B_op(B_op),
 		.T(T),
@@ -101,5 +107,8 @@ module processor(
 		.AluOp(AluOp),
 		.Res(Result)
 	);
-	assign nPC = Jump || (JumpZ && T == 0)? Result : PC + 2;
+	// JumpReg: jump to result
+	// Jump: jump to imm
+	// JumpZ: jump to imm when result == 0
+	assign nPC = JumpReg? Result : (Jump || (JumpZ && Result == 0)? imm : PC + 2);
 endmodule
