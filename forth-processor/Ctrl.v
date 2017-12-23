@@ -59,6 +59,8 @@ module Ctrl(
 			imm = instr[12:0]; JumpZ = 1;
 			AluOp = 10; Swap = 1; // Result: T
 		end else begin // ALU instructions
+			AluOp = instr[12:9];
+			B_op = instr[8:7];
 			if (instr[8:7] == 3)
 				MemRead = 1;
 			case (instr[6:5])

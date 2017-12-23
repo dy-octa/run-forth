@@ -32,12 +32,13 @@ module stack(
 	reg [15:0] _stack[255:0];
 	reg [7:0] top;
 	integer i;
-	initial begin 
+	initial begin
 		for (i=0;i<256;i=i+1) begin
 				_stack[i]=0;
-			end
+		end
 		top = 0;
 	end
+	wire signed [7:0] Delta = Offset == 2'b11 ? -1 : Offset;
 	always @(posedge Clk or Rst) begin
 		if (Rst) begin
 			for (i=0;i<256;i=i+1) begin
@@ -45,20 +46,30 @@ module stack(
 			end
 			top = 0;
 		end else begin
-			if (TWrite) begin
-				$display("%m: T <= %h\n", WData);
-				if (top + Offset >= 0 && top + Offset < 256)
-					_stack[top + Offset] <= WData;
+			if (Delta == 1)
+				$display("%m: push");
+			else if (Delta == -1)
+				$display("%m: pop");
+			if (TWrite)
+				if (top + Delta - 1 >= 0 && top + Delta - 1 < 256) begin
+					_stack[top + Delta - 1] <= WData;	
+					$display("%m: T[%d] <= %h\n", top + Delta - 1, WData);
+				end
+			if (NWrite)
+				if (top + Delta - 2 >= 0 && top + Delta - 2 < 256) begin	
+					_stack[top + Delta - 2] <= WData;
+					$display("%m: N[%d] <= %h\n", top + Delta - 1, WData); 
+				end
+			if (Delta >= -1 && Delta <= 1) begin
+				top <= top + Delta;
 			end
-			if (NWrite) begin	
-				$display("%m: N <= %h\n", WData); 
-				if (top + Offset - 1 >= 0 && top + Offset < 256)
-					_stack[top + Offset - 1] <= WData;
-			end
-			top <= top + Offset;
+			$display("%m: ");
+			for (i=0; i<top; i=i+1)
+				$display("%h ", _stack[i]);
+			$display("\n");
 		end
 	end
-	assign T = top == 0 ? 0 : _stack[top];
-	assign N = top <= 1 ? 0 : _stack[top - 1];
+	assign T = top == 0 ? 0 : _stack[top - 1];
+	assign N = top <= 1 ? 0 : _stack[top - 2];
 
 endmodule

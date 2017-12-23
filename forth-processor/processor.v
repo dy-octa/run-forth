@@ -71,7 +71,7 @@ module processor(
 		.Clk(Clk),
 		.Rst(Rst),
 		.TWrite(RWrite),
-		.NWrite('b0),
+		.NWrite(1'b0),
 		.WData(Result),
 		.Offset(AOffset),
 		.T(R)
