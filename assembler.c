@@ -186,10 +186,16 @@ int assemble(char* code_out, char* dict_out) {
 			printf("L%d %s\n", hanging->lineno, hanging->label);
 		return 1;
 	}
-	for (int i=0; code_buf+i<code_pt; ++i)
-		fprintf(f_code, "%04x\n", (unsigned )code_buf[i]);
-	for (int i=0; dict_buf+i<dict_pt; ++i)
-		fprintf(f_dict, "%04x\n", (unsigned )dict_buf[i]);
+	for (int i=0; code_buf+i<code_pt; ++i) {
+		for (int j = 15; j >= 0; --j)
+			fprintf(f_code, "%d", (code_buf[i]>>j)&1);
+		fprintf(f_code, "\n");
+	}
+	for (int i=0; dict_buf+i<dict_pt; ++i) {
+		for (int j = 15; j >= 0; --j)
+			fprintf(f_dict, "%d", (dict_buf[i]>>j)&1);
+		fprintf(f_dict, "\n");
+	}
 	return 0;
 }
 int main(int argc, char* argv[]) {
