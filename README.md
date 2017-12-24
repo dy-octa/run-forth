@@ -11,4 +11,4 @@ Make
 ./assembler something.asm code.txt dict.txt
 ```
 For simulation, please copy code.txt and dict.txt (please do not change the names) to forth-processor/.
-A couple of tests are provides in /samples.
+A couple of tests are provided in /samples.
