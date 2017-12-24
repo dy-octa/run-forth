@@ -66,7 +66,15 @@ int assemble(char* code_out, char* dict_out) {
 
 	while (gets(line) != NULL) {
 		++lineno;
-		if (line[0] == '#' || line[0] == '\0')
+		int len = strlen(line);
+		for (int i=0; i<len; ++i)
+			if (line[i] == '#') {
+				line[i] = '\0';
+				len = i;
+			}
+		while (len>0 && line[len-1] == ' ')
+			line[--len] = '\0';
+		if (line[0] == '\0')
 			continue;
 		if (strcmp(line, ".dict") == 0) {
 			buf = &dict_pt;
