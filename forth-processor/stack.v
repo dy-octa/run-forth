@@ -25,8 +25,8 @@ module stack(
     input NWrite,
     input [15:0] WData,
     input signed [1:0] Offset,
-    output [15:0] T,
-    output [15:0] N
+    output reg [15:0] T,
+    output reg [15:0] N
     );
 	
 	reg [15:0] _stack[255:0];
@@ -46,10 +46,10 @@ module stack(
 			end
 			top = 0;
 		end else begin
-			if (Delta == 1)
-				$display("%m: push");
-			else if (Delta == -1)
-				$display("%m: pop");
+			//if (Delta == 1)
+			//	$display("%m: push");
+			//else if (Delta == -1)
+			//	$display("%m: pop");
 			if (TWrite)
 				if (top + Delta - 1 >= 0 && top + Delta - 1 < 256) begin
 					_stack[top + Delta - 1] <= WData;	
@@ -61,6 +61,7 @@ module stack(
 					$display("%m: N[%d] <= %h\n", top + Delta - 1, WData); 
 				end
 			if (Delta >= -1 && Delta <= 1) begin
+				$display("%m: top %d -> %d\n", top, top + Delta);
 				top <= top + Delta;
 			end
 			$display("%m: ");
@@ -69,7 +70,8 @@ module stack(
 			$display("\n");
 		end
 	end
-	assign T = top == 0 ? 0 : _stack[top - 1];
-	assign N = top <= 1 ? 0 : _stack[top - 2];
-
+	always @(*) begin
+		T = top == 0 ? 0 : _stack[top - 1];
+		N = top <= 1 ? 0 : _stack[top - 2];
+	end
 endmodule

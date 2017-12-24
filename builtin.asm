@@ -6,26 +6,29 @@ movb _ T 1 0 1
 jr
 
 .:
-movb N T -1 0 0 # N = N
+movb R R -1 0 0
 jr
 
 swap:
 movb N R 0 1 0 # R.push(N)
-movb _ T -1 0 1 # T = N, pop
-jal r>
+movb _ N 0 0 1 # N = T
+movb R R -1 0 0
+movb R T 1 -1 0
 jr
 
 drop:
-jal .
+movb R R -1 0 0
 jr
 
 nip:
-movb _ T -1 0 1 # N=T, pop
+movb _ N 0 0 1 # N=T
+movb R R -1 0 0
+jr
 
 rot:
-jal >r
+movb _ R -1 1 1
 jal swap
-jal r>
+movb R T 1 -1 0
 jal swap
 jr
 
@@ -36,19 +39,6 @@ jr
 
 @:
 movb [T] T 1 0 0
-jr
-
-# Address stack operations
->r:
-movb _ R -1 1 1
-jr
-
-r>:
-movb R T 1 -1 0
-jr
-
-r@:
-movb R T 1 0 0
 jr
 
 # Comparisons
@@ -75,6 +65,9 @@ jr
 # Arithmetic
 negate:
 not _ T 0 0 1
+imm 1
+add N N 0 0 1
+movb R R -1 0 0
 jr
 
 abs:
@@ -91,7 +84,7 @@ sge N T 1 0 0 # _T =  T >= N
 jz _max_else
 # 1 T N, T >= N
 jal . # T N
-movb _ T -1 0 1
+movb _ N 0 0 1
 imm 0
 _max_else:
 jal .
@@ -100,12 +93,12 @@ jr
 
 min:
 slt N T 1 0 0 # _T =  T < N
-jz _max_else
+jz _min_else
 # 1 T N, T < N
 jal . # T N
-movb _ T -1 0 1
+movb _ N 0 0 1
 imm 0
-_max_else:
+_min_else:
 jal .
 jal .
 jr

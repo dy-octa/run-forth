@@ -83,6 +83,7 @@ int compile(FILE* fout) {
 				fprintf(fout, "not _ T 0 0 1\n");
 			}
 		}
+		// Word definition
 		else if (strcmp(word, ":") == 0) {
 			if (def_words) {
 				printf("L%d Nested words definition not allowed\n", lineno);
@@ -108,6 +109,17 @@ int compile(FILE* fout) {
 			fprintf(fout, "%s:\n", word);
 			next_def_word = 0;
 		}
+		// Address stack operations
+		else if (strcmp(word, ">r") == 0) {
+			fprintf(fout, "movb _ R -1 1 1");
+		}
+		else if (strcmp(word, "r>") == 0) {
+			fprintf(fout, "movb R T 1 -1 0");
+		}
+		else if (strcmp(word, "r@") == 0) {
+			fprintf(fout, "movb R T 1 0 0");
+		}
+		// Control flow
 		else if (strcmp(word, "if") == 0) {
 			labels = set_label(IF_TYPE, if_cnt++, labels);
 			fprintf(fout, "jz _else_%d\n", labels->cnt);
@@ -135,7 +147,7 @@ int compile(FILE* fout) {
 			labels = set_label(BEGIN_UNTIL_TYPE, until_cnt++, labels);
 			fprintf(fout, "imm 0\n");
 			fprintf(fout, "_begin_%d:\n", labels->cnt);
-			fprintf(fout, "movb N T -1 0 0\n"); // Remove the flag created last time
+			fprintf(fout, "movb R R -1 0 0\n"); // Remove the flag created last time
 		}
 		else if (strcmp(word, "until") == 0) {
 			if (labels == NULL || labels->type != BEGIN_UNTIL_TYPE) {
@@ -150,7 +162,7 @@ int compile(FILE* fout) {
 			fprintf(fout, "movb _ R -1 1 1\n"); // | hi lo
 			fprintf(fout, "imm 0\n");
 			fprintf(fout, "_do_%d:\n", labels->cnt);
-			fprintf(fout, "movb N T -1 0 0\n"); // Remove the flag created last time
+			fprintf(fout, "movb R R -1 0 0\n"); // Remove the flag created last time
 		}
 		else if (strcmp(word, "loop") == 0) {
 			if (labels == NULL || labels->type != DO_LOOP_TYPE) {
