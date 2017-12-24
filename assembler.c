@@ -27,7 +27,7 @@ int find_label(char* line, label_entry* labels) {
 	else return labels->pc;
 }
 void resolve_hanging(label_entry** hangings, char* labelname, int pc, int lineno, int* code_buf, int* dict_buf) {
-	label_entry *i, *next;
+	label_entry *i, *next, *prev = NULL;
 	for (i=*hangings; i!=NULL; i=next) {
 		next = i->next;
 		if (strcmp(i->label, labelname) == 0) {
@@ -44,8 +44,11 @@ void resolve_hanging(label_entry** hangings, char* labelname, int pc, int lineno
 			printf("L%d hanging label %s at L%d resolved to %d\n", lineno, i->label, lineno, pc);
 			if (i == *hangings)
 				*hangings = next;
+			if (prev)
+				prev->next = next;
 			free(i);
 		}
+		prev = i;
 	}
 }
 int assemble(char* code_out, char* dict_out) {
