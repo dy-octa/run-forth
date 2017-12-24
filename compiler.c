@@ -44,11 +44,9 @@ int compile(FILE* fout) {
 	fprintf(fout, ".text\n");
 	while (scanf("%s", word) != EOF) {
 		int len = strlen(word);
-		if (word[len-1] == '\n') {
-			word[len-1] = '\0';
+		if (getchar() == '\n')
 			newline = 1;
-		}
-		if (strcmp(word, "\\") == 0) {
+		if (word[0] == '\\') {
 			line_comment = 1;
 		}
 		if (line_comment) {
