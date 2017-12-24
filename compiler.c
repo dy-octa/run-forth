@@ -122,7 +122,7 @@ int compile(FILE* fout) {
 		// Control flow
 		else if (strcmp(word, "if") == 0) {
 			labels = set_label(IF_TYPE, if_cnt++, labels);
-			fprintf(fout, "jz _else_%d\n", labels->cnt);
+			fprintf(fout, "jz __else_%d\n", labels->cnt);
 			fprintf(fout, "movb R R -1 0 0\n");
 		}
 		else if (strcmp(word, "else") == 0) {
@@ -130,8 +130,8 @@ int compile(FILE* fout) {
 				printf("L%d: Unmatched else\n", lineno);
 				return 1;
 			}
-			fprintf(fout, "j _then_%d\n", labels->cnt);
-			fprintf(fout, "_else_%d:\n", labels->cnt);
+			fprintf(fout, "j __then_%d\n", labels->cnt);
+			fprintf(fout, "__else_%d:\n", labels->cnt);
 			fprintf(fout, "movb R R -1 0 0\n");
 			labels->type = IF_ELSE_TYPE;
 		}
@@ -140,18 +140,18 @@ int compile(FILE* fout) {
 				printf("L%d: Unmatched then\n", lineno);
 				return 1;
 			}
-			fprintf(fout, "j _then_%d\n", labels->cnt);
+			fprintf(fout, "j __then_%d\n", labels->cnt);
 			if (labels->type == IF_TYPE) {
-				fprintf(fout, "_else_%d:\n", labels->cnt);
+				fprintf(fout, "__else_%d:\n", labels->cnt);
 				fprintf(fout, "movb R R -1 0 0\n");
 			}
-			fprintf(fout, "_then_%d:\n", labels->cnt);
+			fprintf(fout, "__then_%d:\n", labels->cnt);
 			labels = pop_entry(labels);
 		}
 		else if (strcmp(word, "begin") == 0) {
 			labels = set_label(BEGIN_UNTIL_TYPE, until_cnt++, labels);
 			fprintf(fout, "imm 0\n");
-			fprintf(fout, "_begin_%d:\n", labels->cnt);
+			fprintf(fout, "__begin_%d:\n", labels->cnt);
 			fprintf(fout, "movb R R -1 0 0\n"); // Remove the flag created last time
 		}
 		else if (strcmp(word, "until") == 0) {
@@ -159,7 +159,7 @@ int compile(FILE* fout) {
 				printf("L%d: Unmatched until\n", lineno);
 				return 1;
 			}
-			fprintf(fout, "jz _begin_%d\n", labels->cnt);
+			fprintf(fout, "jz __begin_%d\n", labels->cnt);
 			fprintf(fout, "movb R R -1 0 0\n"); // Remove the flag created last time
 		}
 		else if (strcmp(word, "do") == 0) {
@@ -167,7 +167,7 @@ int compile(FILE* fout) {
 			fprintf(fout, "movb _ R -1 1 1\n");
 			fprintf(fout, "movb _ R -1 1 1\n"); // | hi lo
 			fprintf(fout, "imm 0\n");
-			fprintf(fout, "_do_%d:\n", labels->cnt);
+			fprintf(fout, "__do_%d:\n", labels->cnt);
 			fprintf(fout, "movb R R -1 0 0\n"); // Remove the flag created last time
 		}
 		else if (strcmp(word, "loop") == 0) {
@@ -181,7 +181,7 @@ int compile(FILE* fout) {
 			fprintf(fout, "sge R T 1 0 1\n"); // hi lo>=hi | lo
 			fprintf(fout, "jal swap\n"); // lo>=hi hi | lo
 			fprintf(fout, "movb _ R -1 1 1\n"); // lo>=hi | hi lo
-			fprintf(fout, "jz _do_%d\n", labels->cnt);
+			fprintf(fout, "jz __do_%d\n", labels->cnt);
 			fprintf(fout, "movb R R -1 0 0\n"); // Remove the flag created last time
 			fprintf(fout, "movb R R 0 -1 0\n"); // Remove the loop variable
 			fprintf(fout, "movb R R 0 -1 0\n"); // Remove the loop variable
