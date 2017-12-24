@@ -109,13 +109,13 @@ int compile(FILE* fout) {
 		}
 		// Address stack operations
 		else if (strcmp(word, ">r") == 0) {
-			fprintf(fout, "movb _ R -1 1 1\n");
+			fprintf(fout, "movb _ R -1 1 1 #>r\n");
 		}
 		else if (strcmp(word, "r>") == 0) {
-			fprintf(fout, "movb R T 1 -1 0\n");
+			fprintf(fout, "movb R T 1 -1 0 #r>\n");
 		}
 		else if (strcmp(word, "r@") == 0) {
-			fprintf(fout, "movb R T 1 0 0\n");
+			fprintf(fout, "movb R T 1 0 0 #r@\n");
 		}
 		// Control flow
 		else if (strcmp(word, "if") == 0) {
