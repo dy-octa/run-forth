@@ -27,24 +27,24 @@ module dm(
     input MemRead,
     input MemWrite
     );
-	reg [15:0] mem[1023:0];
+	reg [15:0] mem[32768:0];
 	integer i;
 	initial begin 
-		for (i=0;i<1024;i=i+1) begin
+		for (i=0;i<32768;i=i+1) begin
 				mem[i]=0;
 			end
 	end
 	always @(posedge Clk) begin
 		if (Rst) begin
-			for (i=0;i<1024;i=i+1) begin
+			for (i=0;i<32768;i=i+1) begin
 				mem[i]<=0;
 			end
 		end else
 			if (MemWrite) begin
 					$display("*%h <= %h\n", MemAddr, WData);
-					mem[MemAddr[10:1]]<=WData;
+					mem[MemAddr[14:1]]<=WData;
 				end
 	end
-	assign RData = MemRead ? mem[MemAddr[10:1]] : {16{1'bx}};
+	assign RData = MemRead ? mem[MemAddr[14:1]] : {16{1'bx}};
 
 endmodule
