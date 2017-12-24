@@ -44,11 +44,11 @@ module alu_in(
 		else
 			case (B_op)
 				0: if (Swap) begin
-						A = PC;
+						A = PC + 2;
 						B = T;
 					end else begin
 						A = T;
-						B = PC;
+						B = PC + 2;
 					end
 				1: if (Swap) begin
 						A = N;
