@@ -102,3 +102,58 @@ _min_else:
 jal .
 jal .
 jr
+
++:
+add N N 0 0 0
+movb R R -1 0 0
+jr
+
+-:
+sub N N 0 0 0
+movb R R -1 0 0
+jr
+
+*:
+mul N N 0 0 0
+movb R R -1 0 0
+jr
+
+/:
+sub N N 0 0 0
+movb R R -1 0 0
+jr
+
+mod:
+sub N N 0 0 0
+movb R R -1 0 0
+jr
+
+and:
+and N N 0 0 0
+movb R R -1 0 0
+jr
+
+or:
+or N N 0 0 0
+movb R R -1 0 0
+jr
+
+xor:
+xor N N 0 0 0
+movb R R -1 0 0
+jr
+
+invert:
+not _ T 0 0 1
+movb R R -1 0 0
+jr
+
+lshift:
+sll N N 0 0 0
+movb R R -1 0 0
+jr
+
+rshift:
+srl N N 0 0 0
+movb R R -1 0 0
+jr
